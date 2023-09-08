@@ -1,16 +1,19 @@
-#include <ESP8266WiFi.h>
-#include <Keypad.h>
-#include <BlynkSimpleEsp8266.h>
-#define BLYNK_TEMPLATE_ID ""
+// Chage These Credentials with your Blynk Template credentials
+// Chage These Credentials with your Blynk Template credentials 
+#define BLYNK_TEMPLATE_ID "TMPL3J4MZf0Uh"
 #define BLYNK_TEMPLATE_NAME "Keypad Gmail"
-#define BLYNK_AUTH_TOKEN ""
+#define BLYNK_AUTH_TOKEN "dvn5w993L8lqapzMD0zxwTZAA5K9lYMZ"
 
 #define BLYNK_PRINT Serial
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <Keypad.h>
 
 char auth[] = BLYNK_AUTH_TOKEN;
 char ssid[] = "AnnmonRajiJamesOPPO"; // Change your Wifi/ Hotspot Name
 char pass[] = "childsafety"; // Change your Wifi/ Hotspot Password
 
+BlynkTimer timer;
 
 const byte ROWS = 2; //two rows
 const byte COLS = 2; //two columns
@@ -24,19 +27,29 @@ Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 String v_passcode="";
 
-void setup() {
-  // Debug console
+WidgetLED led(V1);
+
+void setup() //Setup function - only function that is run in deep sleep mode
+{
+  Serial.begin(9600); //Start the serial output at 9600 baud
   pinMode(D5,OUTPUT);
   pinMode(D7,OUTPUT);
   pinMode(D8,OUTPUT);
-  Serial.begin(9600);
-  Blynk.begin(auth, ssid, pass);
+  
+  Blynk.begin(auth, ssid, pass);//Splash screen delay
+  delay(2000);
+  timer.setInterval(500L, mySensor);
 }
 
-void loop() 
+void loop() //Loop function
 {
   Blynk.run();
+  timer.run();
+}
 
+void mySensor()
+{
+   
   char key = keypad.getKey();
   
   if (key != NO_KEY){
