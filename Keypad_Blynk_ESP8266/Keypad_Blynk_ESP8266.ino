@@ -1,5 +1,16 @@
 #include <ESP8266WiFi.h>
 #include <Keypad.h>
+#include <BlynkSimpleEsp8266.h>
+#define BLYNK_TEMPLATE_ID ""
+#define BLYNK_TEMPLATE_NAME "Keypad Gmail"
+#define BLYNK_AUTH_TOKEN ""
+
+#define BLYNK_PRINT Serial
+
+char auth[] = BLYNK_AUTH_TOKEN;
+char ssid[] = "AnnmonRajiJamesOPPO"; // Change your Wifi/ Hotspot Name
+char pass[] = "childsafety"; // Change your Wifi/ Hotspot Password
+
 
 const byte ROWS = 2; //two rows
 const byte COLS = 2; //two columns
@@ -19,13 +30,16 @@ void setup() {
   pinMode(D7,OUTPUT);
   pinMode(D8,OUTPUT);
   Serial.begin(9600);
+  Blynk.begin(auth, ssid, pass);
 }
 
-void loop() {
+void loop() 
+{
+  Blynk.run();
+
   char key = keypad.getKey();
   
   if (key != NO_KEY){
-    //Serial.println(key);
     
     v_passcode = v_passcode + key;
     
@@ -40,6 +54,7 @@ void loop() {
         
       if (v_passcode=="12115") {
         Serial.println("Access Granted");
+        Blynk.logEvent("Child reached home");
         digitalWrite(D5,HIGH);
         digitalWrite(D7,HIGH);
         delay(3000);
@@ -47,6 +62,7 @@ void loop() {
         digitalWrite(D7,LOW);
       } else if (v_passcode=="11225") {
         Serial.println("Access Granted");
+        Blynk.logEvent("An intruder in your house");
         digitalWrite(D5,HIGH);
         digitalWrite(D7,HIGH);
         delay(3000);
@@ -54,6 +70,7 @@ void loop() {
         digitalWrite(D7,LOW);
       } else {
         Serial.println("Access Denied");
+        Blynk.logEvent("Someone entered wrong password");
         digitalWrite(D5,HIGH);
         delay(50);
         digitalWrite(D5,LOW);
